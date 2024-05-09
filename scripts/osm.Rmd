@@ -1,0 +1,355 @@
+---
+title: "Prenatal maternal stress: triangulating evidence for intrauterine exposure effects on birth and early childhood outcomes across multiple approaches - additional files"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  word_document:
+    reference_docx: mytemplate1.docx
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message= FALSE)
+knitr::opts_knit$set(root.dir =  "//ess01/P471/data/durable/projects/mat_stress_gxe")
+library(tidyverse)
+library(psych)
+options(knitr.kable.NA = '')
+```
+
+
+
+# Additional file 1: Supplementary information about the sample, measures and models
+
+### sTable 1: Items included in scales
+
+--Tabulate with item text after export
+work_stress15g <- c("AA1172","AA1177","AA1180", "AA1183")
+work_stress30g <- c("CC923", "CC928")
+relprobs15g <- c("AA1533","AA1536","AA1538")
+relprobs15g_r <- c("AA1532","AA1534","AA1535","AA1537","AA1539","AA1540","AA1541")
+relprobs30g <- c("CC1193","CC1196","CC1198")
+relprobs30g_r <- c("CC1192","CC1194","CC1195","CC1197","CC1199","CC1200","CC1201")
+LEyn30g<- c("CC1233","CC1235","CC1237","CC1239","CC1241","CC1243","CC1245","CC1247","CC1249") # yes/no responses
+LEsev30g<- c("CC1234","CC1236","CC1238","CC1240","CC1242","CC1244","CC1246","CC1248","CC1250") # severity
+int <- c("EE908", "EE438", "EE439", "EE909", "EE963",
+"GG321", "GG335", "GG317", "GG328", "GG336","GG318", "GG323", "GG334", "GG337",
+"LL309", "LL305", "LL504", "LL317", "LL315","LL505", "LL321", "LL322", "LL310", "LL320", "LL323")
+
+ext <- c("EE435", "EE903", "EE961", "EE446", "EE447", "EE962", "EE442","EE448",
+"GG314", "GG315", "GG330","GG332", "GG316", "GG319", "GG320", "GG324", "GG326", "GG329", "GG331",
+"LL303", "LL302", "LL324", "LL319", "LL304", "LL307", "LL308", "LL311","LL313", "LL316", "LL318")
+
+## Details of multilevel structural equation model for sibling control analyses (path diagram and IPW for adjustment)
+
+### sFigure 1: Path diagram of multilevel structural equation model underpinning sibling control analyses
+
+--add sFigure1 here after export--
+
+### Inverse probability weighting of sibling sub-sample
+
+The sibling sub-sample of MoBa that is used for the sibling control analyses differs, due to participation bias, from the overall MoBa sample. The following figure illustrates mean differences, on the variables used in this study, between the siblings and the remainder of the MoBa sample (here called "singletons", although these also include families with multiple children but where only 1 is a MoBa participant).
+
+--add sFigure2 here after export--
+
+By predicting sibling status using variables in our dataset, we can estimate MoBa individuals' probability of being included in the sibling dataset, and up-weight observations from those who are more similar to those not included, making estimates from analyses of this subset more similar to those that would have been obtained using the entire sample. The details of this approach are shown in the file 00.1_generate_sib_weights.R in the GitHub repository for this project (https://github.com/psychgen/maternal-prenatal-stress). The resulting smoothed inverse probability weights are linearly related to variables that index selection effects in the sub-sample, as shown below:
+
+--add sFigure3 here after export--
+
+Further, the impact of these weights on the comparisons shown in sFigure 2 is shown in the following figure:
+
+--add sFigure4 here after export--
+
+\newpage
+
+# Additional file 2: Supplementary information about the use and assumptions of testing GxE to infer causality in observational relationships
+
+The inclusion of polygenic GxE analysis as an approach to infer causality in observed relationships between prenatal exposures and offspring outcomes warrants some additional explanation. It relies on several assumptions of varying strength:
+
+1. It is assumed that the polygenic scores included as moderators index (at least partially) mothers' genetic sensitivity to environmental stress 
+2. It is assumed that the intrauterine environment will be more negatively influenced by prenatal stress experienced by mothers with greater genetic sensitivity to environmental stress 
+3. It is assumed that the intrauterine environment will never be made more favourable by maternal exposure to prenatal stress, even among those with lower genetic sensitivity to environmental stress (i.e., no cross-over interactions)
+4. It is assumed that genetic sensitivity to environmental stress, as indexed by selected polygenic scores, will not moderate exposure-outcome assocations arising due to non-causal mechanisms (e.g., shared genes, environments)
+
+Assumption #1 is a particularly strong assumption, because the method cannot provide indirect evidence of a causal effect - even if one exists - unless the selected moderators influence individual responsivity to stress. Assumption #4 is also quite strong, since it assumes there are no non-causal mechanisms that can produce a multiplicative interaction between an exposure and a moderator. 
+
+If each of these assumptions holds true, then evidence of a GxE interaction effect from these models would provide indirect evidence of a causal effect underpinning the observed exposure-outcome relationship. This is because the combination of #1, #2, and #3 above necessitate a main exposure-outcome effect in scenarios where a moderation effect is observed, and #4 necessitates that such an effect has a non-zero causal component.
+
+These assumptions are difficult to test empirically, because doing so would require a "positive control" exposure - i.e., data on an environmental stressor that definitively causally impacts the outcomes in question. Identifying such stressors from within measures of the environment typically available in cohort studies is an ongoing epidemiological challenge. In the absences of empirical tests, we can use simulated data to at least illustrate the mechanics of the approach.
+
+## Simulation: Confounded and causal exposure-outcome associations in a GxE framework
+
+Below, we show the results of applying the GxE models in causal and non-causal exposure-outcome scenarios, where PGS are simulated to moderate only the causal component of associations (as per assumption 4 above).
+
+...
+
+\newpage
+
+# Table 1: Descriptives
+
+```{r descriptives}
+
+
+load("./scratch_data/all_raw.RData")
+
+rawdat_final %>% 
+  select("Prenatal work stress" = wstressPRE_score,
+         "Prenatal stressful life events" = levntsPRE_score,
+         "Prenatal relationship stress" = rprobsPRE_score,
+         "Birthweight"=bwt,
+         "Gestational age" = ges,
+         "Emotional problems (1.5 years)" = cbclin18m_score,
+         "Emotional problems (3 years)" = cbclin3yr_score,
+         "Emotional problems (5 years)" = cbclin5yr_score,
+         "Behavioral problems (1.5 years)" = cbclex18m_score,
+         "Behavioral problems (3 years)" = cbclex3yr_score,
+         "Behavioral problems (5 years)" = cbclex5yr_score,
+         "Stressful life events (1.5 years)" = levnts18m_score,
+         "Stressful life events (3 years)" = levnts3yr_score,
+         "Stressful life events (5 years)" = levnts5yr_score,
+         "Relationship stress (1.5 years)" = rprobs18m_score,
+         "Relationship stress (3 years)" = rprobs3yr_score,
+         "Relationship stress (5 years)" = rprobs5yr_score) %>% 
+  psych::describe() %>% 
+  as.data.frame() %>% 
+  select(N=n, Mean=mean, SD=sd, Min. =min, Max.=max) %>% 
+  rownames_to_column("Measure") %>% 
+  knitr::kable(digits=3, caption= "Table 1: Descriptive statistics for raw scale scores on main study exposures, outcomes and negative control exposures")
+
+
+```
+
+\newpage
+
+
+# Additional file 3: Supplementary results
+
+## sTable 2: Demographic characteristics of the sample
+
+```{r demographics}
+
+
+load("./scratch_data/all_raw.RData")
+
+library(phenotools)
+
+demogs   <- curate_dataset(variables_required=
+                             list(
+                               moba=c(
+                                 "AA1315", "AA1316", "AA1124", "AA1126",                  # maternal & paternal income & education
+                                 "PARITET_5",           # parity
+                                 "KJONN","MORS_ALDER")),         # child sex and maternal age
+                           PDB = "2306",
+                           moba_data_version = 12,
+                           completion_threshold=0.5,
+                           return_items=TRUE,
+                           consistent_items=TRUE,
+                           transformations=NULL,
+                           exclusions=NULL,
+                           recursive=TRUE,
+                           dx_owner="child",
+                           out_format="merged_df") %>% 
+  mutate(indid= paste0(preg_id, BARN_NR))
+
+# change response ordering of education variable (combine '2' & '3' below)
+demogs_cat <- demogs %>%
+  right_join(rawdat_final) %>% 
+  mutate(`Maternal education` = case_when(AA1124_raw==1~"Elementary",
+                                          AA1124_raw==2~"Upper secondary, vocational or other", 
+                                          AA1124_raw==3~"Upper secondary, vocational or other",
+                                          AA1124_raw==4~"Upper secondary, vocational or other",
+                                          AA1124_raw==5~"University degree, <=4 years (Bachelor's)",
+                                          AA1124_raw==6~"University degree, >4 years (Master's, PhD",
+                                          AA1124_raw==0~NA_character_)) %>%
+  mutate(`Paternal education` = case_when(AA1126_raw==1~"Elementary",
+                                          AA1126_raw==2~"Upper secondary, vocational or other", 
+                                          AA1126_raw==3~"Upper secondary, vocational or other",
+                                          AA1126_raw==4~"Upper secondary, vocational or other",
+                                          AA1126_raw==5~"University degree, <=4 years (Bachelor's)",
+                                          AA1126_raw==6~"University degree, >4 years (Master's, PhD",
+                                          AA1126_raw==0~NA_character_)) %>%
+  mutate(`Maternal income` = case_when(AA1315_raw==1~"None",
+                                       AA1315_raw==2~"<150,000 NOK", 
+                                       AA1315_raw==3~"150-199,000 NOK",
+                                       AA1315_raw==4~"200-299,000 NOK",
+                                       AA1315_raw==5~"300-399,000 NOK",
+                                       AA1315_raw==6~"400-499,000 NOK",
+                                       AA1315_raw==7~">=500,000 NOK",
+                                       AA1315_raw==0~NA_character_)) %>%
+  mutate(`Paternal income` = case_when(AA1316_raw==1~"None",
+                                       AA1316_raw==2~"<150,000 NOK", 
+                                       AA1316_raw==3~"150-199,000 NOK",
+                                       AA1316_raw==4~"200-299,000 NOK",
+                                       AA1316_raw==5~"300-399,000 NOK",
+                                       AA1316_raw==6~"400-499,000 NOK",
+                                       AA1316_raw==7~">=500,000 NOK",
+                                       AA1316_raw==0~NA_character_,
+                                       AA1316_raw==8~NA_character_)) %>%
+  mutate(Parity = case_when(PARITET_5_raw==0~"1st child",
+                            PARITET_5_raw==1~"2nd child",
+                            PARITET_5_raw==2~"3rd child",
+                            PARITET_5_raw==3~"4th child",
+                            PARITET_5_raw==4~"5th child (or later)") ) %>% 
+  mutate(Sex = case_when(KJONN_raw==1~"Male",
+                         KJONN_raw==2~"Female" ),
+         `Maternal genotype data` = ifelse(!is.na(neurot2018.pgs.pc.mother),"Available","Missing")) %>% 
+  select(matches("education|income|Parity|Sex|genotype"))
+
+table(demogs_cat$`Maternal education`, useNA="ifany") %>% 
+  as.data.frame() %>% 
+  bind_cols(table(demogs_cat$`Maternal education`, useNA= "ifany") %>% 
+              prop.table() %>% 
+              as.data.frame() %>% 
+              select("Percentage"=Freq)) %>% 
+  mutate(Characteristic = "Maternal education") %>% 
+  bind_rows(
+    table(demogs_cat$`Paternal education`, useNA="ifany") %>% 
+      as.data.frame() %>% 
+      bind_cols(table(demogs_cat$`Paternal education`, useNA= "ifany") %>% 
+                  prop.table() %>% 
+                  as.data.frame() %>% 
+                  select("Percentage"=Freq)) %>% 
+      mutate(Characteristic = "Paternal education")  ) %>% 
+  bind_rows(
+    table(demogs_cat$`Maternal income`, useNA="ifany") %>% 
+      as.data.frame() %>% 
+      bind_cols(table(demogs_cat$`Maternal income`, useNA= "ifany") %>% 
+                  prop.table() %>% 
+                  as.data.frame() %>% 
+                  select("Percentage"=Freq))%>% 
+      mutate(Characteristic = "Maternal income") ) %>% 
+  bind_rows(
+    table(demogs_cat$`Paternal income`, useNA="ifany") %>% 
+      as.data.frame() %>% 
+      bind_cols(table(demogs_cat$`Paternal income`, useNA= "ifany") %>% 
+                  prop.table() %>% 
+                  as.data.frame() %>% 
+                  select("Percentage"=Freq))%>% 
+      mutate(Characteristic = "Paternal income") ) %>% 
+  bind_rows(
+    table(demogs_cat$`Parity`, useNA="ifany") %>% 
+      as.data.frame() %>% 
+      bind_cols(table(demogs_cat$`Parity`, useNA= "ifany") %>% 
+                  prop.table() %>% 
+                  as.data.frame() %>% 
+                  select("Percentage"=Freq))%>% 
+      mutate(Characteristic = "Parity") ) %>% 
+  bind_rows(
+    table(demogs_cat$`Sex`, useNA="ifany") %>% 
+      as.data.frame() %>% 
+      bind_cols(table(demogs_cat$`Sex`, useNA= "ifany") %>% 
+                  prop.table() %>% 
+                  as.data.frame() %>% 
+                  select("Percentage"=Freq))%>% 
+      mutate(Characteristic = "Child sex") ) %>%
+  bind_rows(
+    table(demogs_cat$`Maternal genotype data`, useNA="ifany") %>% 
+      as.data.frame() %>% 
+      bind_cols(table(demogs_cat$`Maternal genotype data`, useNA= "ifany") %>% 
+                  prop.table() %>% 
+                  as.data.frame() %>% 
+                  select("Percentage"=Freq))%>% 
+      mutate(Characteristic = "Maternal genotype data") ) %>% 
+  select(Characteristic, "Level"= Var1, "N" = Freq, " "=Percentage ) %>% 
+  mutate(` ` = paste0("(",round(` `*100, 1), "%)"))%>% 
+  drop_na() %>% 
+  knitr::kable(digits=3, caption= "sTable 2: Demographic characteristics of the sample")
+
+
+
+```
+
+
+
+## sTable 3: Parameter estimates from the observational models, full sample
+
+```{r obs_sib}
+
+load(file="./output/obs_sib_mods_res.RData")
+
+ results %>% 
+  purrr::reduce(bind_rows) %>% 
+  separate(model, into = c("outcome","model")) %>% 
+  filter(model=="full") %>% 
+  mutate(Exposure= factor(tolower(param),levels=c("lepre","rppre","wspre"),
+                          labels=c("Life events","Relationship problems","Work stress")),
+         Wave=factor(tolower(str_remove_all(paramHeader,".ON")), 
+                                 levels=rev(c("bwt","ges","beh1","beh2","beh3","emo1","emo2","emo3")),
+                                 labels=rev(c("","","1.5yrs","3yrs","5yrs","1.5yrs","3yrs","5yrs"))),
+         Outcome= factor(outcome,levels=rev(c("bwt","ges","beh","emo")),
+                         labels=rev(c("Birthweight","Gestational age","Behavioral","Emotional"))),
+         Wave= factor(ifelse(Outcome%in%c("Birthweight","Gestational age"),"Birth",Wave),
+                      levels=c("Birth","1","2","3"),
+                      labels=c("Birth", "1.5yrs","3yrs","5yrs"))) %>% 
+  select(Exposure, Outcome, Wave, est, lci, uci)%>% 
+   arrange(Outcome, Wave) %>% 
+  knitr::kable(digits=3, caption= "sTable 3: Parameter estimates from the observational models, full sample")
+
+```
+
+## sFigure 5: Unadjusted observational estimates from both the full and (IPW weighted) sibling sample 
+
+--add sFigure5 here after export--
+
+## sTable 4: Parameter estimates from the polygenic GxE models
+
+```{r gxe}
+load( file="./output/gxe_linear_mods_res.RData")
+
+do.call(rbind, linear_mods_res$ests) %>% 
+  filter(str_detect(label, "b7|b8|b9")) %>% 
+  mutate(Exposure= factor(str_sub(tolower(rhs),end=5),levels=c("lepre","rppre","wspre"),
+                          labels=c("Life evts.","R'ship probs.","Work stress")),
+         outcome_specific=factor(tolower(lhs), 
+                                 levels=rev(c("bwt","ges","beh1","beh2","beh3","emo1","emo2","emo3")),
+                                 labels=rev(c("","","1.5yrs","3yrs","5yrs","1.5yrs","3yrs","5yrs"))),
+         Outcome= factor(str_sub(lhs, end=3),
+                         levels=rev(c("bwt","ges","beh","emo")),
+                         labels=rev(c("Birthweight","Gest.age","Behavioural","Emotional"))),
+         Wave= factor(ifelse(Outcome%in%c("Birthweight","Gest.age"),"Birth",outcome_specific),
+                      levels=c("Birth","1","2","3"),
+                      labels=c("Birth", "1.5yrs","3yrs","5yrs")),
+         `PGS moderator`=factor(mod, levels=c("neu","pts","adh","hei"),
+                          labels=c("Neurot.","PTSD","ADHD","Height")),
+         fdrp= p.adjust(pvalue, method="fdr")) %>% 
+  select(Exposure,Outcome,Wave,`PGS moderator`,"Std. interaction effect"=est.std,ci.lower,ci.upper,"FDR-corrected p value"=fdrp) %>%
+  knitr::kable(digits=3, caption= "sTable 4: Parameter estimates from the polygenic GxE models")
+
+```
+
+## sTable 5: Parameter estimates from the negative control models
+
+```{r nctrl}
+load(file="./output/neg_ctrl_linear_mods_res.RData")
+do.call(rbind, linear_mods_res$results) %>% 
+  mutate(model = ifelse(out=="ges"&model=="invalid","validnc",model )) %>% 
+  filter(model!="invalid",
+         !str_detect(out,"3")) %>% 
+  mutate(Exposure=factor(str_sub(exp,end=2),
+                         levels=c("rp","le"),
+                         labels=c("Relationship problems", "Life events")),
+         `Wave`=factor(tolower(out), 
+                                 levels=rev(c("bwt","ges","beh1","beh2","beh3","emo1","emo2","emo3")),
+                                 labels=rev(c("","","1.5yrs","3yrs","5yrs","1.5yrs","3yrs","5yrs"))),
+         `Exposure wave`=factor(tolower(str_sub(exp, start=3)), 
+                                 levels=rev(c("pre","18m","3yr","5yr")),
+                                 labels=rev(c("Prenatal","1.5yrs","3yrs","5yrs"))), 
+         Outcome=factor(str_sub(out,end=3),
+                        levels=rev(c("bwt","ges","emo","beh")),
+                        labels=rev(c("Birthweight","Gest.age","Behavioral","Emotional"))),
+         `Analysis type`=factor(model, levels=c("expout","validnc"),
+                                labels=c("Exposure-outcome","Negative control")),
+         `Outcome wave`= factor(ifelse(Outcome%in%c("Birthweight","Gest.age"),"Birth", `Wave`),
+                      levels=c("Birth","1","2","3"),
+                      labels=c("Birth", "1.5yrs","3yrs","5yrs")),
+         `Model type` = ifelse(model=="expout", "Exposure-outcome", "Negative control")) %>% 
+  select(Exposure,`Exposure wave`,Outcome, `Outcome wave`, `Model type`, "Estimate"=est.std, ci.lower,ci.upper  ) %>% 
+  arrange(Exposure, Outcome,`Model type` ) %>% 
+  knitr::kable(digits=3, caption= "sTable 5: Parameter estimates from the negative control models")
+
+```
+
+## sFigure 6: MR results without adjustment for offspring/partner genotype
+
+--add sFigure 6 here after export
+
+

@@ -1,0 +1,22 @@
+---
+title: 'Analytic code for "Prenatal maternal stress: triangulating evidence for intrauterine
+  exposure effects on birth and early childhood outcomes across multiple approaches"'
+output: github_document
+date: "2024-05-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+This scripts folder contains R code and Mplus input files to run all the analyses in the paper. Scripts are organised as follows:
+
+- 00_... Data preparation, mutliple imputation, inverse probability weighting
+- 01_... Sibling control models (see also "mplus" directory)
+- 02_... Polygenic GxE models
+- 03_... Mendelian randomization
+- 04_... Negative control analyses
+
+The paper is available as a preprint at: >>><<<

@@ -1,0 +1,146 @@
+TITLE: emo_full
+DATA: FILE = "//ess01/P471/data/durable/projects/mat_stress_gxe/data/
+all_for_mplus.dat";
+VARIABLE: 
+NAMES = indid m_id wsPRE rp18m rp3yr rp5yr rp6mo rpPRE le18m le3yr le5yr le6mo lePRE
+     bwt ges par sex emo1 emo2 emo3 beh1 beh2 beh3 neuM ptsM adhM heiM neuF ptsF
+     adhF heiF neuC ptsC adhC heiC; 
+MISSING=.;
+USEVARIABLES= wsPRE rpPRE lePRE par sex emo1 emo2 emo3;
+CLUSTER= m_id;
+WITHIN= par sex ;
+
+DEFINE:
+center sex (GRANDMEAN);
+CENTER par (GROUPMEAN);
+
+ANALYSIS:
+TYPE = TWOLEVEL ;
+!ALGORITHM = INTEGRATION ;
+!MODEL = NOCOV;
+H1ITERATIONS = 1;
+PROCESSORS = 5;
+!MCONVERGENCE = 0.015; 
+!LOGCRITERION = 0.005;
+MITERATIONS = 5000;
+
+MODEL:
+%WITHIN%
+
+!Main effect, individual level
+emo1 ON wsPRE rpPRE lePRE (b11_1-b11_3);
+emo2 ON wsPRE rpPRE lePRE (b12_1-b12_3);
+emo3 ON wsPRE rpPRE lePRE (b13_1-b13_3);
+
+!Covariate effects, individual level
+emo1 ON par (c11);
+emo1 ON sex (c21);
+emo2 ON par (c12);
+emo2 ON sex (c22);
+emo3 ON par (c13);
+emo3 ON sex (c23);
+
+!Residual variances maternal variables, individual level
+wsPRE rpPRE lePRE (ew1-ew3);  
+!Covariance maternal variables, individual level
+wsPRE WITH rpPRE lePRE;
+lePRE WITH rpPRE;
+
+!Variance child outcome , individual level
+emo1 emo2 emo3;
+
+!Covaraince child outcomes, individual level
+emo1 WITH emo2 emo3;
+emo2 WITH emo3;
+
+%BETWEEN%
+!Latent variance component at nuclear family level, maternal variable 
+i1_m_l2 BY wsPRE@1 (wsB);  
+i2_m_l2 BY rpPRE@1 (rpB); 
+i3_m_l2 BY lePRE@ (leB);
+
+!Direct effect of nuclear family component on child outcome (estimated)
+i1_m_l2 BY emo1 emo2 emo3 (gi1_1-gi1_3);
+i2_m_l2 BY emo1 emo2 emo3 (gi2_1-gi2_3);
+i3_m_l2 BY emo1 emo2 emo3 (gi3_1-gi3_3);
+
+!Indirect effect, between level
+emo1 ON wsPRE rpPRE lePRE (b11_1-b11_3);
+emo2 ON wsPRE rpPRE lePRE (b12_1-b12_3);
+emo3 ON wsPRE rpPRE lePRE (b13_1-b13_3);
+                           
+!Latent variance component mean @ 0
+[ i1_m_l2@0 i2_m_l2@0 i3_m_l2@0 ];
+
+!Family level maternal variable variances @ 0 
+
+wsPRE@0;
+rpPRE@0; 
+lePRE@0; 
+
+!Family level child variance
+emo1;
+
+!Family level child covariances
+emo1 WITH emo2 emo3;
+emo2 WITH emo3;
+
+!Variance latent variable maternal var
+i1_m_l2 i2_m_l2 i3_m_l2(eb1-eb3);
+
+!Estimate means at this level
+[wsPRE];
+[rpPRE];
+[lePRE]; 
+[ emo1 ] (b01);
+[ emo2 ] (b02);
+[ emo3 ] (b03);
+
+
+MODEL CONSTRAINT:
+NEW(mvar1 eb1_std ew1_std mvar2 eb2_std ew2_std mvar3 eb3_std ew3_std);
+! Define total maternal variance across levels
+mvar1=eb1+ew1;
+mvar2=eb2+ew2;
+mvar3=eb3+ew3;
+! Standardise each variance component 
+eb1_std=eb1/mvar1;
+ew1_std=ew1/mvar1;
+eb2_std=eb2/mvar2;
+ew2_std=ew2/mvar2;
+eb3_std=eb3/mvar3;
+ew3_std=ew3/mvar3;
+! Fix effects across time to equal
+!exposure effects
+!b11_1=b12_1;
+!b12_1=b13_1;
+!b11_2=b12_2;
+!b12_2=b13_2;
+!b11_3=b12_3;
+!b12_3=b13_3;
+!confounding effects
+!gi1_1=gi1_2;
+!gi1_2=gi1_3;
+!gi2_1=gi2_2;
+!gi2_2=gi2_3;
+!gi3_1=gi3_2;
+!gi3_2=gi3_3;
+
+! Fix between effects to zero 
+gi1_1=0;
+gi1_2=0;
+gi1_3=0;
+gi2_1=0;
+gi2_2=0;
+gi2_3=0;
+gi3_1=0;
+gi3_2=0;
+gi3_3=0;
+
+OUTPUT:
+sampstat;
+stdyx;
+CINTERVAL;
+tech1;
+tech4;
+sval;

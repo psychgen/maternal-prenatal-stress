@@ -1,0 +1,108 @@
+TITLE: bwt_1l
+DATA: FILE = "//ess01/P471/data/durable/projects/mat_stress_gxe/data/
+sibs_for_mplus.dat";
+VARIABLE: 
+NAMES = indid m_id wsPRE rp18m rp3yr rp5yr rp6mo rpPRE le18m le3yr le5yr le6mo lePRE
+     bwt ges par sex emo1 emo2 emo3 beh1 beh2 beh3 neuM ptsM adhM heiM neuF ptsF
+     adhF heiF neuC ptsC adhC heiC ipsw; 
+MISSING=.;
+USEVARIABLES= wsPRE rpPRE lePRE par sex bwt;
+CLUSTER= m_id;
+WITHIN= par sex ;
+WEIGHT=ipsw;
+WTSCALE=UNSCALED;
+
+DEFINE:
+center sex (GRANDMEAN);
+CENTER par (GROUPMEAN);
+
+ANALYSIS:
+TYPE = TWOLEVEL ;
+!ALGORITHM = INTEGRATION ;
+!MODEL = NOCOV;
+H1ITERATIONS = 1;
+PROCESSORS = 5;
+!MCONVERGENCE = 0.015; 
+!LOGCRITERION = 0.005;
+MITERATIONS = 5000;
+
+MODEL:
+%WITHIN%
+
+!Main effect, individual level
+bwt ON wsPRE rpPRE lePRE (b1_1-b1_3);
+
+!Covariate effects, individual level
+bwt ON par (c1);
+bwt ON sex (c2);
+
+!Residual variances maternal variables, individual level
+wsPRE rpPRE lePRE (ew1-ew3);  
+!Covariance maternal variables, individual level
+wsPRE WITH rpPRE lePRE;
+lePRE WITH rpPRE;
+
+!Variance child outcome , individual level
+bwt;
+
+%BETWEEN%
+!Latent variance component at nuclear family level, maternal variable 
+i1_m_l2 BY wsPRE@1 (wsB);  
+i2_m_l2 BY rpPRE@1 (rpB); 
+i3_m_l2 BY lePRE@ (leB);
+
+!Direct effect of nuclear family component on child outcome (estimated)
+i1_m_l2 BY bwt (gl2_1);
+i2_m_l2 BY bwt (gl2_2);
+i3_m_l2 BY bwt (gl2_3);
+
+!Indirect effect, between level
+bwt ON wsPRE rpPRE lePRE (b1_1-b1_3);
+                           
+!Latent variance component mean @ 0
+[ i1_m_l2@0 i2_m_l2@0 i3_m_l2@0 ];
+
+!Family level maternal variable variances @ 0 
+
+wsPRE@0;
+rpPRE@0; 
+lePRE@0; 
+
+!Family level child variance
+bwt;
+
+!Variance latent variable maternal var
+i1_m_l2 i2_m_l2 i3_m_l2(eb1-eb3);
+
+!Estimate means at this level
+[wsPRE];
+[rpPRE];
+[lePRE]; 
+[ bwt ] (b0);
+
+
+MODEL CONSTRAINT:
+NEW(mvar1 eb1_std ew1_std mvar2 eb2_std ew2_std mvar3 eb3_std ew3_std);
+! Define total maternal variance across levels
+mvar1=eb1+ew1;
+mvar2=eb2+ew2;
+mvar3=eb3+ew3;
+! Standardise each variance component 
+eb1_std=eb1/mvar1;
+ew1_std=ew1/mvar1;
+eb2_std=eb2/mvar2;
+ew2_std=ew2/mvar2;
+eb3_std=eb3/mvar3;
+ew3_std=ew3/mvar3;
+! Fix between effects to zero 
+gl2_1=0;
+gl2_2=0;
+gl2_3=0;
+
+OUTPUT:
+sampstat;
+stdyx;
+CINTERVAL;
+tech1;
+tech4;
+sval;
